@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "plate_recognition.h"
 
+
 #define MAX_LOADSTRING 100
 
 // Глобальные переменные:
@@ -26,6 +27,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Разместите код здесь.
+	GdiplusStartupInput gdiplusStartupInput;
+	ULONG_PTR           gdiplusToken;
+
+	// Initialize GDI+.
+	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
     // Инициализация глобальных строк
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -136,12 +142,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
-                break;
+                break;			
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
         }
         break;
+
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
@@ -151,8 +158,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+
         PostQuitMessage(0);
         break;
+
+	case WM_GETMINMAXINFO: {										
+		
+		RECT w, c;
+		
+		GetWindowRect(hWnd, &w);
+		GetClientRect(hWnd, &c);
+
+		LPMINMAXINFO pMinMaxInfo = (LPMINMAXINFO)lParam;
+		pMinMaxInfo->ptMinTrackSize.x = MIN_WINDOW_WIDTH;
+		pMinMaxInfo->ptMaxTrackSize.x = MAX_WINDOW_WIDTH;
+
+		int header = (w.bottom - w.top) - (c.bottom - c.top);
+		pMinMaxInfo->ptMinTrackSize.y = MIN_WINDOW_HEIGHT + header;
+		pMinMaxInfo->ptMaxTrackSize.y = MAX_WINDOW_HEIGHT + header;
+				
+		}
+		break;
+
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
