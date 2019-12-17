@@ -27,9 +27,27 @@
     <ClInclude Include="plate_recognition.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="WindowController.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="RecognitionTools.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Plate.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="plate_recognition.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowController.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="RecognitionTools.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Plate.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
