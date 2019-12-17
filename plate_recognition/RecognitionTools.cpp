@@ -16,11 +16,20 @@ RecognitionTools::RecognitionTools()
 		//OCR.SetPageSegMode(tesseract::PSM_SINGLE_CHAR);
 }
 
-
 RecognitionTools::~RecognitionTools()
 {
 	for (auto &plate : licensePlates) {
 		plate.release();
 	}
 	carPicture.release();
+}
+
+void RecognitionTools::SetImage(Mat &img)
+{
+	this->carPicture = img;
+}
+
+Mat RecognitionTools::GetImage() const
+{
+	return this->carPicture;
 }

@@ -29,7 +29,8 @@ class RecognitionTools
 public:
 	//bool Recognize();
 	//bool Recognize(Mat &img);
-	//void SetImage(Mat &img);
+	void SetImage(Mat &img);
+	Mat GetImage() const;
 	//void SaveLicensePlates();
 	//void ShowLicensePlates();
 	//vector<Mat> getLicensePlates();
