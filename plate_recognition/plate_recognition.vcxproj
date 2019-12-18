@@ -158,7 +158,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Plate.h" />
     <ClInclude Include="plate_recognition.h" />
     <ClInclude Include="RecognitionTools.h" />
     <ClInclude Include="Resource.h" />
@@ -166,7 +165,6 @@
     <ClInclude Include="WindowController.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Plate.cpp" />
     <ClCompile Include="plate_recognition.cpp" />
     <ClCompile Include="RecognitionTools.cpp" />
     <ClCompile Include="WindowController.cpp" />

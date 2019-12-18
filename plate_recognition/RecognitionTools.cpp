@@ -2,18 +2,13 @@
 
 RecognitionTools::RecognitionTools()
 {
-	if (!plateCascadeClassifier.load(PLATE_CASCADE_PATH)) {
-		
-		//std::cout << "Plate Cascade Load Error";
+	if (!plateCascadeClassifier.load(PLATE_CASCADE_PATH)) {		
+		// Plate cascade load error
 	}
 
 	if (!symbolCascadeClassifier.load(SYMBOL_CASCADE_PATH)) {
-		
-		//std::cout << "Symbol Cascade Load Error";
+		// Symbol cascade load error		
 	}
-
-	//	OCR.Init(NULL, "C:\\Users\\hp\\Desktop\\course_work\\tessdata\\amh.traineddata");
-		//OCR.SetPageSegMode(tesseract::PSM_SINGLE_CHAR);
 }
 
 RecognitionTools::~RecognitionTools()
@@ -27,55 +22,44 @@ RecognitionTools::~RecognitionTools()
 bool RecognitionTools::Recognize()
 {
 	if (carPicture.empty()) {
-		throw std::logic_error("Images for recognize is empty.");////////////////////////////////
+		// No image for recognize error
+		return false;
 	}
 
-	licensePlates.clear();
-	plateSymbols.clear();
-	plateText.clear();
+	normalizedPlates.clear();
+	licensePlates.clear();	
 
 	Mat grayPicture;
-
 	cvtColor(carPicture, grayPicture, COLOR_BGR2GRAY);
 	grayPicture.convertTo(grayPicture, CV_8U);
-	bool needResize = (carPicture.size().width / scale > HALF_WIDTH) || (carPicture.size().height / scale > HALF_HEIGHT);
+
+	bool needResize = (carPicture.size().width / SCALE > HALF_WIDTH)
+		|| (carPicture.size().height / SCALE > HALF_HEIGHT);
 
 	if (needResize) {
 		resize(grayPicture, grayPicture, 
-			Size(carPicture.size().width / scale, 
-				grayPicture.size().height / scale), 
+			Size(carPicture.size().width / SCALE,
+				grayPicture.size().height / SCALE),
 			0, 0, INTER_LINEAR);
 	}
-	vector<Rect> plates;
-	//equalizeHist(grayPicture, grayPicture);
 
+	vector<Rect> plates;
 	plateCascadeClassifier.detectMultiScale(grayPicture, plates, SCALE_FACTOR_PLATES_CL, MIN_NEIGHBORS_NUM_PLATES_CL, 0);
 
-	for (auto &point : plates)
-	{
+	for (auto &point : plates) {
 		Point plateBegin;
 		Point plateEnd;
 
-		// —делать просто тернарный оператор
-		if (needResize) {
-			plateBegin = Point(point.x * scale, point.y * scale);
-			plateEnd = Point(point.width * scale, point.height * scale);
-		}
-		else {
-			plateBegin = Point(point.x, point.y);
-			plateEnd = Point(point.width, point.height);
-		}
-
+		int coef = (needResize) ? SCALE : 1;
+		plateBegin = Point(point.x * coef, point.y * coef);
+		plateEnd = Point(point.width * coef, point.height * coef);
+		
 		licensePlates.push_back(carPicture(Rect(plateBegin.x, plateBegin.y, plateEnd.x, plateEnd.y)));
 	}
 
-	for (auto& p : licensePlates) {
-		findLetters(p);
+	for (auto &p : licensePlates) {
+		normalizedPlates.push_back(Normalize(p));
 	}
-
-	//if (!plateSymbols.empty())
-	//	recognizeLetters();
-
 	return true;
 }
 
@@ -91,161 +75,126 @@ Mat RecognitionTools::GetImage() const
 
 void RecognitionTools::SaveLicensePlates()
 {
+	// изменить дл€ виндоус и диалогов. ћќжно даже не тут сохран€ть а в контроллере
 	size_t id = 0;
-	for (auto &p : licensePlates)
-	{
+	for (auto &p : licensePlates) {
 		string name("license plate " + to_string(id) + ".jpg");
 		imwrite(name, p);
 		id++;
 	}
 }
 
-vector<Mat> RecognitionTools::getLicensePlates()
+vector<Mat> RecognitionTools::GetLicensePlates() const
 {
 	return this->licensePlates;
 }
 
-vector<string> RecognitionTools::getLicenseText() const
+vector<Mat> RecognitionTools::GetNormalizedPlates() const
 {
-	return this->plateText;
+	return this->normalizedPlates;
 }
 
-vector<Mat> RecognitionTools::getLicensePlates() const
-{
-	return this->licensePlates;
-}
-
-PlateArea::PlateArea(Mat & plate, vector<Plate>& plateAreaSymbols)
-{
-	this->plate = plate;
-	this->plateAreaSymbols = plateAreaSymbols;
-}
-
-bool RecognitionTools::findLetters(Mat & src) //Rename to print number in black-white + delete big trashhold
-{
-	vector<vector<cv::Point> > contours;
-	vector<Plate> contursOut;
-	vector<Vec4i> hierarchy;
-	cv::Mat cannyOutput, srcGray, srcThreshold;
+Mat RecognitionTools::Normalize(Mat &src)
+{	
+	cv::Mat srcGray, srcThreshold;
 
 	cvtColor(src, srcGray, COLOR_BGR2GRAY);
 	threshold(srcGray, srcThreshold, 0, 255, THRESH_BINARY | THRESH_OTSU);
 	medianBlur(srcThreshold, srcThreshold, 5);
 
-	double angle = getAngle(srcThreshold);
-	rotateImage(srcThreshold, angle);
+	double angle = GetAngle(srcThreshold);
+	RotateImage(srcThreshold, angle);
 
-	unsigned bottomBound = getBottomBound(srcThreshold);
-	unsigned topBound = getTopBound(srcThreshold);
-	srcThreshold = srcThreshold(cv::Rect(0, topBound, srcThreshold.size().width, bottomBound - topBound));
-	unsigned leftBound = std::max(getLeftBound(srcThreshold, true), getLeftBound(srcThreshold, false));
-	unsigned rightBound = std::min(getRightBound(srcThreshold, true), getRightBound(srcThreshold, false));
-	///////////////////////////////
+	int bottomBound = GetBottomBound(srcThreshold);
+	int topBound = GetTopBound(srcThreshold);
 
-	srcThreshold = srcThreshold(cv::Rect(leftBound, 0, rightBound - leftBound, srcThreshold.size().height));
-//	cv::namedWindow("numbers", cv::WINDOW_AUTOSIZE);
-
-	//cv::imshow("numbers", srcThreshold); // Ёто надо будет вернуть и вывести
-	return false;
+	srcThreshold = srcThreshold(Rect(0, topBound, srcThreshold.size().width, bottomBound - topBound));
+	
+	int leftBound = max(GetLeftBound(srcThreshold, true), GetLeftBound(srcThreshold, false));
+	int rightBound = min(GetRightBound(srcThreshold, true), GetRightBound(srcThreshold, false));
+	
+	Mat normalizedImg = src.clone();
+	RotateImage(normalizedImg, angle);
+	return normalizedImg(Rect(leftBound, topBound, rightBound - leftBound, bottomBound - topBound));
 }
 
-double RecognitionTools::getAngle(Mat & plate)
+double RecognitionTools::GetAngle(Mat &plate)
 {
 	int min = plate.size().height;
-	double angle = 0;
-	cv::Mat temp;
+	double resultAngle = 0;
+	Mat tmp;
 
-	for (double a = minDegree; a < maxDegree; a += stepDegree) //a - angle 
-	{
-		temp = plate.clone();
-		rotateImage(temp, a);
-
-		unsigned bottomBound = getBottomBound(temp);
-		if (bottomBound < min)
-		{
-			angle = a;
+	for (double angle = MIN_ANGLE; angle < MAX_ANGLE; angle += STEP_ANGLE) {
+		tmp = plate.clone();
+		RotateImage(tmp, angle);
+		int bottomBound = GetBottomBound(tmp);
+		if (bottomBound < min) {
+			resultAngle = angle;
 			min = bottomBound;
 		}
 	}
 
-	return angle;
+	return resultAngle;
 }
 
-unsigned RecognitionTools::getBottomBound(cv::Mat & plate)
+int RecognitionTools::GetBottomBound(Mat &plate)
 {
 	size_t height = plate.size().height;
-	unsigned lastCount = 0;
-	cv::Mat data;
+	int lastCount = 0;
+	Mat data;
 
-	for (unsigned i = height / 2; i < height; i++) {
+	for (int i = height / 2; i < height; i++) {
 		data = plate.row(i);
-		unsigned count = cv::countNonZero(data);
+		int count = countNonZero(data);
 
-		if (count < lastCount / 2)
+		if (count < lastCount / 2) {
 			return i;
+		}
 
 		lastCount = count;
 	}
-
 	return height;
 }
 
-unsigned RecognitionTools::getTopBound(cv::Mat & plate)
+int RecognitionTools::GetTopBound(Mat &plate)
 {
-	std::vector<cv::Rect> symbols;
+	vector<Rect> symbols;
 
 	symbolCascadeClassifier.detectMultiScale(plate, symbols);
 
-//	if (symbols.empty())
-		//std::cout << "Symbols not found" << std::endl;
-
-	//std::vector<cv::Rect>::iterator result;
-
-	//std::sort(symbols.begin(), symbols.end(), [](const cv::Rect& r1, const cv::Rect& r2) {return r1.y > r2.y;});
-
-	/* вывод картинок всех букв!!!!!!!!!!
-	int i = 0;
-	for (auto& s : symbols) {
-		cv::namedWindow(to_string(i), WINDOW_AUTOSIZE);
-		cv::imshow(to_string(i), plate(s));
-		i++;
-	}*/
-
-	//if (showInfo)
-		//for (auto& s : symbols)
-		//	std::cout << s.y << std::endl;
-
-	unsigned averageHeight = 0;
-	for (auto& s : symbols)
+	int averageHeight = 0;
+	for (auto &s : symbols) {
 		averageHeight += s.y;
+	}
 
-	if (!symbols.empty()) // is zero
+	if (!symbols.empty()) {
 		averageHeight /= symbols.size();
+	}
 
-	return symbols.empty() ? getHistTopBound(plate) : averageHeight;
+	return symbols.empty() ? GetHistTopBound(plate) : averageHeight;
 }
 
-unsigned RecognitionTools::getHistTopBound(cv::Mat & plate)
+int RecognitionTools::GetHistTopBound(Mat &plate)
 {
 	size_t height = plate.size().height;
-	cv::Mat data;
+	Mat data;
 
-	for (unsigned i = 0; i < height / 2; ++i)
-	{
+	for (int i = 0; i < height / 2; i++) {
 		data = plate.row(i);
-		unsigned count = cv::countNonZero(data);
+		int count = cv::countNonZero(data);
 
-		if (count > height*0.5)
+		if (count > height*0.5) {
 			return i;
+		}
 	}
 
 	return 0;
 }
 
-unsigned RecognitionTools::getRightBound(cv::Mat plate, bool iswhite)
+int RecognitionTools::GetRightBound(Mat plate, bool iswhite)
 {
-	cv::Mat element = getStructuringElement(cv::MORPH_RECT,
-		cv::Size(2 * 1 + 1, 2 * 1 + 1),
+	Mat element = getStructuringElement(MORPH_RECT,
+		cv::Size(3, 3),
 		cv::Point(1, 1));
 	cv::erode(plate, plate, element);
 	cv::dilate(plate, plate, element);
@@ -253,24 +202,24 @@ unsigned RecognitionTools::getRightBound(cv::Mat plate, bool iswhite)
 	size_t width = plate.size().width;
 	double height = plate.size().height;
 
-	cv::Mat data;
+	Mat data;
 
-	for (unsigned i = width - 2; i > width / 2; --i)
-	{
+	for (int i = width - 2; i > width / 2; i--) {
 		data = plate.col(i);
-		unsigned count = cv::countNonZero(data);
+		int count = countNonZero(data);
 
-		if ((!iswhite && count > height*0.5) || (iswhite && count < height*0.60))
+		if ((!iswhite && count > height*0.5) || (iswhite && count < height*0.60)) {
 			return i + 1;
+		}
 	}
 
 	return width;
 }
 
-unsigned RecognitionTools::getLeftBound(cv::Mat plate, bool iswhite)
+int RecognitionTools::GetLeftBound(Mat plate, bool iswhite)
 {
-	cv::Mat element = getStructuringElement(cv::MORPH_RECT,
-		cv::Size(2 * 1 + 1, 2 * 1 + 1),
+	Mat element = getStructuringElement(MORPH_RECT,
+		cv::Size(3, 3),
 		cv::Point(1, 1));
 	cv::erode(plate, plate, element);
 	cv::dilate(plate, plate, element);
@@ -278,23 +227,22 @@ unsigned RecognitionTools::getLeftBound(cv::Mat plate, bool iswhite)
 	size_t width = plate.size().width;
 	double height = plate.size().height;
 
-	cv::Mat data;
+	Mat data;
 
-	for (unsigned i = 2; i < width / 2; ++i)
-	{
+	for (int i = 2; i < width / 2; i++) {
 		data = plate.col(i);
-		unsigned count = cv::countNonZero(data);
+		int count = countNonZero(data);
 
-		if ((!iswhite && count > height*0.5) || (iswhite && count < height*0.60))
+		if ((!iswhite && count > height*0.5) || (iswhite && count < height*0.60)) {
 			return i;
+		}
 	}
-
 	return 0;
 }
 
-void RecognitionTools::rotateImage(cv::Mat & image, const double angle)
+void RecognitionTools::RotateImage(Mat &image, const double angle)
 {
-	cv::Mat rot_mat(2, 3, CV_32FC1);
+	Mat rot_mat(2, 3, CV_32FC1);
 
 	cv::Point center = cv::Point(image.cols / 2, image.rows / 2);
 	double scale = 1;

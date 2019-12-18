@@ -89,7 +89,7 @@ using namespace Gdiplus;
 // normalized plate rect and image size
 #define NORM_IMG_LEFT    B_OPEN_X
 #define NORM_IMG_TOP     5 + PLATE_IMG_BOTTOM
-#define NORM_IMG_RIGHT   NORM_IMG_LEFT + B_OPEN_WIDTH
+#define NORM_IMG_RIGHT   (NORM_IMG_LEFT + B_OPEN_WIDTH)
 #define NORM_IMG_BOTTOM  NORM_IMG_TOP + B_OPEN_HEIGHT
 // text inside plate rect
 #define NORM_RECT_TEXT         L"No recognized plate."

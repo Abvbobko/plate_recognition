@@ -25,19 +25,16 @@ using namespace Gdiplus;
 #include <vector>
 #include <math.h>
 #include <stdexcept>
-#include "Plate.h"
 using namespace cv;
 
 #include "RecognitionTools.h"
 #include "plate_recognition.h"
+
 // font info
 #define FONT_FAMILY  L"Helvetica"
 #define FONT_COLOR   Color::Black
 #define FONT_SIZE    12
 
-/*
-* WindowController - class for window events managment.
-*/
 class WindowController
 {
 public:
@@ -47,7 +44,7 @@ public:
 	WindowController();
 	~WindowController();
 private:
-	void DrawImageRect(HDC hdc, /*Mat picture,*/ int rectL, int rectT,
+	void DrawImageRect(HDC hdc, int rectL, int rectT,
 		int rectR, int rectB, const WCHAR * text, int textX, int textY);
 
 	RecognitionTools * recTools;

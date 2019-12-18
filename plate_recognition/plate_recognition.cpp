@@ -4,7 +4,6 @@
 #include "framework.h"
 #include "plate_recognition.h"
 
-
 #define MAX_LOADSTRING 100
 
 // Глобальные переменные:
@@ -62,8 +61,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     return (int) msg.wParam;
 }
-
-
 
 //
 //  ФУНКЦИЯ: MyRegisterClass()
@@ -140,34 +137,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		
 		CreateWindow(TEXT("button"), TEXT(B_OPEN_TEXT),
-			B_OPEN_STYLE,
-			B_OPEN_X, B_OPEN_Y, 
+			B_OPEN_STYLE, B_OPEN_X, B_OPEN_Y, 
 			B_OPEN_WIDTH, B_OPEN_HEIGHT,
 			hWnd, (HMENU)B_OPEN_ID, NULL, NULL);
 
 		CreateWindow(TEXT("button"), TEXT(B_REC_TEXT),
-			B_REC_STYLE,
-			B_REC_X, B_REC_Y,
+			B_REC_STYLE, B_REC_X, B_REC_Y,
 			B_REC_WIDTH, B_REC_HEIGHT,
 			hWnd, (HMENU)B_REC_ID, NULL, NULL);
 
 		CreateWindow(TEXT("button"), TEXT(B_PREV_TEXT),
-			B_PREV_STYLE,
-			B_PREV_X, B_PREV_Y,
+			B_PREV_STYLE, B_PREV_X, B_PREV_Y,
 			B_PREV_WIDTH, B_PREV_HEIGHT,
 			hWnd, (HMENU)B_PREV_ID, NULL, NULL);
 
 		CreateWindow(TEXT("button"), TEXT(B_NEXT_TEXT),
-			B_NEXT_STYLE,
-			B_NEXT_X, B_NEXT_Y,
+			B_NEXT_STYLE, B_NEXT_X, B_NEXT_Y,
 			B_NEXT_WIDTH, B_NEXT_HEIGHT,
 			hWnd, (HMENU)B_NEXT_ID, NULL, NULL);
 
 		break;
     case WM_COMMAND:
 		{
-            int wmId = LOWORD(wParam);
-            // Разобрать выбор в меню:
+            int wmId = LOWORD(wParam);            
             switch (wmId)
             {
 			case B_OPEN_ID: 
@@ -179,7 +171,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					arg.lpstrFile = file;
 					arg.nMaxFile = 1024;
 					arg.Flags = OFN_ALLOWMULTISELECT | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
-					//arg.lpstrFilter = FILE_FILTER;
+					arg.lpstrFilter = L"Supported Files(*.jpg, *.png, *.bmp)\0*.jpg;*.png;*.bmp\0";
 					if (GetOpenFileName(&arg)) {
 						char filePath[1024];
 						size_t charsConverted = 0;
@@ -207,11 +199,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	
     case WM_PAINT:
         {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-			
-			winController->DrawComponents(hdc);
-			
+			PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hWnd, &ps);			
+			winController->DrawComponents(hdc);			
             EndPaint(hWnd, &ps);
         }
         break;

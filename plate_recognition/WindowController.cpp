@@ -15,39 +15,53 @@ void WindowController::DrawComponents(HDC hdc)
 		gr.DrawImage(&bitmap, points, 3);
 	}
 	else {
-		DrawImageRect(hdc,//, recTools->GetImage(), 
-			MAIN_IMG_LEFT, MAIN_IMG_TOP, MAIN_IMG_RIGHT, MAIN_IMG_BOTTOM,
+		DrawImageRect(hdc, MAIN_IMG_LEFT, MAIN_IMG_TOP, MAIN_IMG_RIGHT, MAIN_IMG_BOTTOM,
 			MAIN_RECT_TEXT, MAIN_TEXT_START_POS_X, MAIN_TEXT_START_POS_Y);
 	}
-	vector<Mat> licensePlates = recTools->getLicensePlates();
+	vector<Mat> licensePlates = recTools->GetLicensePlates();
 	if (!licensePlates.empty()) {
-		Mat a = licensePlates[0];
-		if (a.data) {
+		Mat plate = licensePlates[0];/////////////////
+		if (plate.data) {
 			Graphics gr(hdc);
 			PointF points[3] = {
 				PointF(PLATE_IMG_LEFT, PLATE_IMG_TOP),
 				PointF(PLATE_IMG_RIGHT, PLATE_IMG_TOP),
 				PointF(PLATE_IMG_LEFT, PLATE_IMG_BOTTOM)
 			};
-			cv::Size size = a.size();
-			Bitmap bitmap(size.width, size.height, a.step1(), PixelFormat24bppRGB, a.data);
+			cv::Size size = plate.size();
+			Bitmap bitmap(size.width, size.height, plate.step1(), PixelFormat24bppRGB, plate.data);
 			gr.DrawImage(&bitmap, points, 3);
 		}
 	}
 	else {
-		DrawImageRect(hdc,//, recTools->GetImage(),
-			PLATE_IMG_LEFT, PLATE_IMG_TOP, PLATE_IMG_RIGHT, PLATE_IMG_BOTTOM,
+		DrawImageRect(hdc, PLATE_IMG_LEFT, PLATE_IMG_TOP, PLATE_IMG_RIGHT, PLATE_IMG_BOTTOM,
 			PLATE_RECT_TEXT, PLATE_TEXT_START_POS_X, PLATE_TEXT_START_POS_Y);
 	}
 
-	DrawImageRect(hdc,// recTools->GetImage(),
-		NORM_IMG_LEFT, NORM_IMG_TOP, NORM_IMG_RIGHT, NORM_IMG_BOTTOM,
-		NORM_RECT_TEXT, NORM_TEXT_START_POS_X, NORM_TEXT_START_POS_Y);
-	
-	
+	vector<Mat> normalizedPlates = recTools->GetNormalizedPlates();
+	if (!normalizedPlates.empty()) {
+		Mat plate = normalizedPlates[0];///////////
+		
+		if (plate.data) {
+			Graphics gr(hdc);
+			PointF points[3] = {
+				PointF(NORM_IMG_LEFT, NORM_IMG_TOP),
+				PointF(NORM_IMG_RIGHT, NORM_IMG_TOP),
+				PointF(NORM_IMG_LEFT, NORM_IMG_BOTTOM)
+			};
+			cv::Size size = plate.size();
+			
+			Bitmap bitmap(size.width, size.height, plate.step1(), PixelFormat24bppRGB, plate.data);
+			gr.DrawImage(&bitmap, points, 3);
+		}
+	}
+	else {
+		DrawImageRect(hdc, NORM_IMG_LEFT, NORM_IMG_TOP, NORM_IMG_RIGHT, NORM_IMG_BOTTOM,
+			NORM_RECT_TEXT, NORM_TEXT_START_POS_X, NORM_TEXT_START_POS_Y);
+	}
 }
 
-void WindowController::DrawImageRect(HDC hdc,/* Mat picture,*/ int rectL, int rectT,
+void WindowController::DrawImageRect(HDC hdc, int rectL, int rectT,
 	int rectR, int rectB, const WCHAR * text, int textX, int textY)
 {	
 	Rectangle(hdc, rectL, rectT, rectR, rectB);
