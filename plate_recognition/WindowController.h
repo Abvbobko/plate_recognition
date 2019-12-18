@@ -29,7 +29,7 @@ using namespace Gdiplus;
 using namespace cv;
 
 #include "RecognitionTools.h"
-
+#include "plate_recognition.h"
 // font info
 #define FONT_FAMILY  L"Helvetica"
 #define FONT_COLOR   Color::Black
@@ -41,12 +41,15 @@ using namespace cv;
 class WindowController
 {
 public:
-	void DrawImageRect(HDC hdc, /*Mat picture,*/ int rectL, int rectT,
-		int rectR, int rectB, const WCHAR * text, int textX, int textY);
+	void DrawComponents(HDC hdc);	
+	void SetImage(char * filePath);
 	WindowController();
 	//~WindowController();
 
 private:
+	void DrawImageRect(HDC hdc, /*Mat picture,*/ int rectL, int rectT,
+		int rectR, int rectB, const WCHAR * text, int textX, int textY);
+
 	RecognitionTools * recTools;
 };
 
