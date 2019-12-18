@@ -43,9 +43,9 @@ class WindowController
 public:
 	void DrawComponents(HDC hdc);	
 	void SetImage(char * filePath);
+	void Recognize();
 	WindowController();
-	//~WindowController();
-
+	~WindowController();
 private:
 	void DrawImageRect(HDC hdc, /*Mat picture,*/ int rectL, int rectT,
 		int rectR, int rectB, const WCHAR * text, int textX, int textY);

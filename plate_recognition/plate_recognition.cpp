@@ -170,26 +170,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Разобрать выбор в меню:
             switch (wmId)
             {
-			case B_OPEN_ID: {
-				OPENFILENAME arg = {};
-				arg.lStructSize = sizeof(arg);
-				TCHAR file[1024];
-				file[0] = '\0';
-				arg.lpstrFile = file;
-				arg.nMaxFile = 1024;
-				arg.Flags = OFN_ALLOWMULTISELECT | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
-				//arg.lpstrFilter = FILE_FILTER;
-
-				if (GetOpenFileName(&arg)) {
-					char filepath[260];
-					size_t charsConverted = 0;
-					wcstombs_s(&charsConverted, filepath, arg.lpstrFile, 260);			
-					winController->SetImage(filepath);
-					//a = imread(filepath, IMREAD_COLOR);
+			case B_OPEN_ID: 
+				{
+					OPENFILENAME arg = {};
+					arg.lStructSize = sizeof(arg);
+					TCHAR file[1024];
+					file[0] = '\0';
+					arg.lpstrFile = file;
+					arg.nMaxFile = 1024;
+					arg.Flags = OFN_ALLOWMULTISELECT | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+					//arg.lpstrFilter = FILE_FILTER;
+					if (GetOpenFileName(&arg)) {
+						char filePath[1024];
+						size_t charsConverted = 0;
+						wcstombs_s(NULL, filePath, arg.lpstrFile, 1024);
+						winController->SetImage(filePath);						
+					}				
+					RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);	
 				}
-					
-
-				RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);	}
+				break;
+			case B_REC_ID:
+				winController->Recognize();
 				break;
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);

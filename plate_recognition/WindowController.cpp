@@ -6,13 +6,12 @@ void WindowController::DrawComponents(HDC hdc)
 	if (img.data) {
 		Graphics gr(hdc);
 		PointF points[3] = {
-			PointF(10, 10),
-			PointF(600, 10),
-			PointF(10, 400)
+			PointF(MAIN_IMG_LEFT, MAIN_IMG_TOP),
+			PointF(MAIN_IMG_RIGHT, MAIN_IMG_TOP),
+			PointF(MAIN_IMG_LEFT, MAIN_IMG_BOTTOM)
 		};
 		cv::Size size = img.size();
 		Bitmap bitmap(size.width, size.height, img.step1(), PixelFormat24bppRGB, img.data);
-
 		gr.DrawImage(&bitmap, points, 3);
 	}
 	else {
@@ -49,8 +48,18 @@ void WindowController::SetImage(char * filePath)
 	recTools->SetImage(img);	
 }
 
+void WindowController::Recognize()
+{
+
+}
+
 WindowController::WindowController()
 {
 	recTools = new RecognitionTools;
+}
+
+WindowController::~WindowController()
+{
+	recTools->~RecognitionTools();
 }
 
