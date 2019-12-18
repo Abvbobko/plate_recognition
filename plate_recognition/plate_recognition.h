@@ -29,3 +29,12 @@ using namespace Gdiplus;
 #define B_OPEN_STYLE   WS_VISIBLE | WS_CHILD
 #define B_OPEN_TEXT    "Open"
 #define B_OPEN_ID      100
+
+// button RECOGNIZE
+#define B_REC_X       605
+#define B_REC_Y       5 + B_OPEN_Y + B_OPEN_HEIGHT
+#define B_REC_WIDTH   B_OPEN_WIDTH 
+#define B_REC_HEIGHT  B_OPEN_HEIGHT
+#define B_REC_STYLE   WS_VISIBLE | WS_CHILD
+#define B_REC_TEXT    "Recognize"
+#define B_REC_ID      200

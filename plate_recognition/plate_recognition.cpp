@@ -145,6 +145,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			B_OPEN_WIDTH, B_OPEN_HEIGHT,
 			hWnd, (HMENU)B_OPEN_ID, NULL, NULL);
 
+		CreateWindow(TEXT("button"), TEXT(B_REC_TEXT),
+			B_REC_STYLE,
+			B_REC_X, B_REC_Y,
+			B_REC_WIDTH, B_REC_HEIGHT,
+			hWnd, (HMENU)B_REC_ID, NULL, NULL);
 
 		break;
     case WM_COMMAND:
