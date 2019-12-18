@@ -138,10 +138,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
 	case WM_CREATE:
-		/*CreateWindow(TEXT("button"), TEXT("Beep"),
-			WS_VISIBLE | WS_CHILD,
-			20, 50, 80, 25,
-			hWnd, (HMENU)289, NULL, NULL);*/
+		
+		CreateWindow(TEXT("button"), TEXT(B_OPEN_TEXT),
+			B_OPEN_STYLE,
+			B_OPEN_X, B_OPEN_Y, 
+			B_OPEN_WIDTH, B_OPEN_HEIGHT,
+			hWnd, (HMENU)B_OPEN_ID, NULL, NULL);
+
+
 		break;
     case WM_COMMAND:
         {		
