@@ -34,7 +34,7 @@ using namespace cv;
 #define MAIN_IMG_HEIGHT  400
 
 // text inside main rect
-#define MAIN_RECT_TEXT    L"No images uploaded."
+#define MAIN_RECT_TEXT    L"No image uploaded."
 #define FONT_FAMILY       L"Helvetica"
 #define FONT_COLOR        Color::Black
 #define FONT_SIZE         12
