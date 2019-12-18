@@ -27,7 +27,7 @@ RecognitionTools::~RecognitionTools()
 bool RecognitionTools::Recognize()
 {
 	if (carPicture.empty()) {
-		throw std::logic_error("Images for recognize is empty.");
+		throw std::logic_error("Images for recognize is empty.");////////////////////////////////
 	}
 
 	licensePlates.clear();
@@ -36,13 +36,15 @@ bool RecognitionTools::Recognize()
 
 	Mat grayPicture;
 
-	cv::cvtColor(carPicture, grayPicture, COLOR_BGR2GRAY);
+	cvtColor(carPicture, grayPicture, COLOR_BGR2GRAY);
 	grayPicture.convertTo(grayPicture, CV_8U);
 	bool needResize = (carPicture.size().width / scale > HALF_WIDTH) || (carPicture.size().height / scale > HALF_HEIGHT);
 
-
 	if (needResize) {
-		cv::resize(grayPicture, grayPicture, Size(carPicture.size().width / scale, grayPicture.size().height / scale), 0, 0, INTER_LINEAR);
+		resize(grayPicture, grayPicture, 
+			Size(carPicture.size().width / scale, 
+				grayPicture.size().height / scale), 
+			0, 0, INTER_LINEAR);
 	}
 	vector<Rect> plates;
 	//equalizeHist(grayPicture, grayPicture);
@@ -53,6 +55,8 @@ bool RecognitionTools::Recognize()
 	{
 		Point plateBegin;
 		Point plateEnd;
+
+		// Сделать просто тернарный оператор
 		if (needResize) {
 			plateBegin = Point(point.x * scale, point.y * scale);
 			plateEnd = Point(point.width * scale, point.height * scale);
@@ -139,9 +143,9 @@ bool RecognitionTools::findLetters(Mat & src) //Rename to print number in black-
 	///////////////////////////////
 
 	srcThreshold = srcThreshold(cv::Rect(leftBound, 0, rightBound - leftBound, srcThreshold.size().height));
-	cv::namedWindow("numbers", cv::WINDOW_AUTOSIZE);
+//	cv::namedWindow("numbers", cv::WINDOW_AUTOSIZE);
 
-	cv::imshow("numbers", srcThreshold);
+	//cv::imshow("numbers", srcThreshold); // Это надо будет вернуть и вывести
 	return false;
 }
 
@@ -192,12 +196,12 @@ unsigned RecognitionTools::getTopBound(cv::Mat & plate)
 
 	symbolCascadeClassifier.detectMultiScale(plate, symbols);
 
-	if (symbols.empty())
-		std::cout << "Symbols not found" << std::endl;
+//	if (symbols.empty())
+		//std::cout << "Symbols not found" << std::endl;
 
-	std::vector<cv::Rect>::iterator result;
+	//std::vector<cv::Rect>::iterator result;
 
-	std::sort(symbols.begin(), symbols.end(), [](const cv::Rect& r1, const cv::Rect& r2) {return r1.y > r2.y;});
+	//std::sort(symbols.begin(), symbols.end(), [](const cv::Rect& r1, const cv::Rect& r2) {return r1.y > r2.y;});
 
 	/* вывод картинок всех букв!!!!!!!!!!
 	int i = 0;

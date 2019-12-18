@@ -18,8 +18,8 @@ using namespace std;
 
 #include "Plate.h"
 
-#define PLATE_CASCADE_PATH "resources\\plate_cascade.xml"//"C:\\Users\\hp\\Desktop\\course_work\\plate_cascade.xml"
-#define SYMBOL_CASCADE_PATH "resources\\symbol_cascade.xml"//"C:\\Users\\hp\\Desktop\\course_work\\symbol_cascade.xml"
+#define PLATE_CASCADE_PATH "C:\\Users\\hp\\Desktop\\course work(change path)\\plate_cascade.xml"
+#define SYMBOL_CASCADE_PATH "C:\\Users\\hp\\Desktop\\course work(change path)\\symbol_cascade.xml"
 #define SCALE_FACTOR_PLATES_CL 1.1
 #define MIN_NEIGHBORS_NUM_PLATES_CL 10
 

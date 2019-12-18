@@ -191,6 +191,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			case B_REC_ID:
 				winController->Recognize();
+				RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);
 				break;
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
