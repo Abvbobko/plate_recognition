@@ -27,21 +27,10 @@ using namespace Gdiplus;
 #include <stdexcept>
 using namespace cv;
 
-// main rect and image size
-#define MAIN_IMG_X       10
-#define MAIN_IMG_Y       10
-#define MAIN_IMG_WIDTH   600
-#define MAIN_IMG_HEIGHT  400
-
-// text inside main rect
-#define MAIN_RECT_TEXT    L"No image uploaded."
-#define FONT_FAMILY       L"Helvetica"
-#define FONT_COLOR        Color::Black
-#define FONT_SIZE         12
-#define FONT_STYLE        FontStyleBold
-#define TEXT_START_POS_X  (MAIN_IMG_WIDTH)/2.5
-#define TEXT_START_POS_Y  (MAIN_IMG_HEIGHT - FONT_SIZE)/2
-
+// font info
+#define FONT_FAMILY  L"Helvetica"
+#define FONT_COLOR   Color::Black
+#define FONT_SIZE    12
 
 /*
 * WindowController - class for window events managment.
@@ -49,6 +38,7 @@ using namespace cv;
 class WindowController
 {
 public:
-	void DrawImageRect(HDC hdc, Mat picture);
+	void DrawImageRect(HDC hdc, Mat picture, int rectL, int rectT,
+		int rectR, int rectB, const WCHAR * text, int textX, int textY);
 };
 
