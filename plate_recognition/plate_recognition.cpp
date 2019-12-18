@@ -194,6 +194,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				// нужно вставить if есть фотки нету фоток, а лучше перенести в winController
 				PLATE_IMG_LEFT, PLATE_IMG_TOP, PLATE_IMG_RIGHT, PLATE_IMG_BOTTOM,
 				PLATE_RECT_TEXT, PLATE_TEXT_START_POS_X, PLATE_TEXT_START_POS_Y);
+
+			winController->DrawImageRect(hdc, recTools->GetImage(),
+				NORM_IMG_LEFT, NORM_IMG_TOP, NORM_IMG_RIGHT, NORM_IMG_BOTTOM,
+				NORM_RECT_TEXT, NORM_TEXT_START_POS_X, NORM_TEXT_START_POS_Y);
+
 			// TODO: Добавьте сюда любой код прорисовки, использующий HDC...
             EndPaint(hWnd, &ps);
         }

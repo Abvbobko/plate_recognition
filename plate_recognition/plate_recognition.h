@@ -25,7 +25,7 @@ using namespace Gdiplus;
 #define B_OPEN_X       605
 #define B_OPEN_Y       9
 #define B_OPEN_WIDTH   220 
-#define B_OPEN_HEIGHT  70
+#define B_OPEN_HEIGHT  74
 #define B_OPEN_STYLE   WS_VISIBLE | WS_CHILD
 #define B_OPEN_TEXT    "Open"
 #define B_OPEN_ID      100
@@ -86,3 +86,13 @@ using namespace Gdiplus;
 #define PLATE_RECT_TEXT         L"No recognized plate."
 #define PLATE_TEXT_START_POS_X  PLATE_IMG_LEFT + 35
 #define PLATE_TEXT_START_POS_Y  (PLATE_IMG_BOTTOM - PLATE_IMG_TOP - FONT_SIZE + 5)/2
+
+// normalized plate rect and image size
+#define NORM_IMG_LEFT    B_OPEN_X
+#define NORM_IMG_TOP     5 + PLATE_IMG_BOTTOM
+#define NORM_IMG_RIGHT   NORM_IMG_LEFT + B_OPEN_WIDTH
+#define NORM_IMG_BOTTOM  NORM_IMG_TOP + B_OPEN_HEIGHT
+// text inside plate rect
+#define NORM_RECT_TEXT         L"No recognized plate."
+#define NORM_TEXT_START_POS_X  NORM_IMG_LEFT + 35
+#define NORM_TEXT_START_POS_Y  (NORM_IMG_BOTTOM - NORM_IMG_TOP - FONT_SIZE + 5)/2
