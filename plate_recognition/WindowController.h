@@ -18,14 +18,17 @@ using namespace Gdiplus;
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
-#include <algorithm>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <math.h>
 #include <stdexcept>
+#include "Plate.h"
 using namespace cv;
+
+#include "RecognitionTools.h"
 
 // font info
 #define FONT_FAMILY  L"Helvetica"
@@ -38,7 +41,12 @@ using namespace cv;
 class WindowController
 {
 public:
-	void DrawImageRect(HDC hdc, Mat picture, int rectL, int rectT,
+	void DrawImageRect(HDC hdc, /*Mat picture,*/ int rectL, int rectT,
 		int rectR, int rectB, const WCHAR * text, int textX, int textY);
+	WindowController();
+	//~WindowController();
+
+private:
+	RecognitionTools * recTools;
 };
 

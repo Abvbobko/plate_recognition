@@ -1,11 +1,11 @@
 #include "WindowController.h"
 
-void WindowController::DrawImageRect(HDC hdc, Mat picture, int rectL, int rectT, 
+void WindowController::DrawImageRect(HDC hdc,/* Mat picture,*/ int rectL, int rectT, 
 	int rectR, int rectB, const WCHAR * text, int textX, int textY)
 {
-	if (!picture.empty()) {
-	}
-	else {
+	//if (!picture.empty()) {
+	//}
+	//else {
 		Rectangle(hdc, rectL, rectT, rectR, rectB);
 
 		Graphics gr(hdc);		
@@ -13,6 +13,11 @@ void WindowController::DrawImageRect(HDC hdc, Mat picture, int rectL, int rectT,
 		SolidBrush brush(FONT_COLOR);		
 		gr.DrawString(text, wcslen(text), &font,
 			PointF(textX, textY), &brush);
-	}
-};
+//	}
+}
+
+WindowController::WindowController()
+{
+	recTools = new RecognitionTools;
+}
 
