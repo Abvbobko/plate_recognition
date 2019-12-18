@@ -141,10 +141,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		/*CreateWindow(TEXT("button"), TEXT("Beep"),
 			WS_VISIBLE | WS_CHILD,
 			20, 50, 80, 25,
-			hWnd, (HMENU)1, NULL, NULL);*/
+			hWnd, (HMENU)289, NULL, NULL);*/
 		break;
     case WM_COMMAND:
-        {
+        {		
             int wmId = LOWORD(wParam);
             // Разобрать выбор в меню:
             switch (wmId)
