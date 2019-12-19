@@ -14,6 +14,7 @@
 #include <math.h>
 #include <stdexcept>
 
+#include "plate_rec_constants.h"
 using namespace cv;
 using namespace std;
 
@@ -40,11 +41,12 @@ class RecognitionTools
 {
 public:	
 	void ClearOutput();
+	int GetError();
 	Mat GetImage() const;
 	vector<Mat> GetLicensePlates() const;
 	vector<Mat> GetNormalizedPlates() const;
-	bool Recognize();	
-	void SaveLicensePlates();	////////////	
+	bool Recognize();		
+	void ResetError();
 	void SetImage(Mat &img);
 	RecognitionTools();
 	~RecognitionTools();
@@ -59,7 +61,7 @@ private:
 	void RotateImage(Mat &image, const double angle);	
 
 	Mat carPicture;
-
+	int error = NO_ERRORS;
 	vector<Mat>	licensePlates;
 	vector<Mat>	normalizedPlates;
 

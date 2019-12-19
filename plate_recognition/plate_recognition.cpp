@@ -183,15 +183,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						char filePath[1024];
 						size_t charsConverted = 0;
 						wcstombs_s(NULL, filePath, arg.lpstrFile, 1024);
-						winController->SetImage(filePath);		
+						winController->SetImage(filePath);								
+					}								
+					RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);
+					if (winController->GetError()) {
+						MessageBox(hWnd, winController->GetErrorText(winController->GetError()), L"Ok", MB_OK);
+					}
+					else {
 						EnableWindow(recButton, true);
-					}				
-					EnableWindow(saveButton, false);
-					RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);	
+						EnableWindow(saveButton, false);
+					}
 				}
 				break;
 			case B_REC_ID:
-				{
+				{				
 					bool result = winController->Recognize();
 					if (result) {
 						EnableWindow(saveButton, true);
@@ -205,6 +210,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					}
 					else {
 						EnableWindow(saveButton, false);
+					}
+					if (winController->GetError()) {
+						MessageBox(hWnd, winController->GetErrorText(winController->GetError()), L"Ok", MB_OK);
 					}
 					RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);
 				}
@@ -226,11 +234,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						wcstombs_s(NULL, filePath, arg.lpstrFile, 1024);
 						winController->SavePlate(filePath);					
 					}
+					if (winController->GetError()) {
+						MessageBox(hWnd, winController->GetErrorText(winController->GetError()), L"Ok", MB_OK);
+					}
 					if (GetSaveFileName(&arg)) {
 						char filePath[1024];
 						size_t charsConverted = 0;
 						wcstombs_s(NULL, filePath, arg.lpstrFile, 1024);
 						winController->SaveNPlate(filePath);
+					}
+					if (winController->GetError()) {
+						MessageBox(hWnd, winController->GetErrorText(winController->GetError()), L"Ok", MB_OK);
 					}
 				
 				}

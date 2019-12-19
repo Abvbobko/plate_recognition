@@ -3,11 +3,11 @@
 RecognitionTools::RecognitionTools()
 {
 	if (!plateCascadeClassifier.load(PLATE_CASCADE_PATH)) {		
-		// Plate cascade load error
+		error = PLATE_CLASSIFIER_LOAD_ERROR;
 	}
 
 	if (!symbolCascadeClassifier.load(SYMBOL_CASCADE_PATH)) {
-		// Symbol cascade load error		
+		error = SYMBOL_CLASSIFIER_LOAD_ERROR;
 	}
 }
 
@@ -21,8 +21,9 @@ RecognitionTools::~RecognitionTools()
 
 bool RecognitionTools::Recognize()
 {
+	ResetError();
 	if (carPicture.empty()) {
-		// No image for recognize error
+		error = NO_LOADED_IMAGE;
 		return false;
 	}
 
@@ -56,10 +57,20 @@ bool RecognitionTools::Recognize()
 		licensePlates.push_back(carPicture(Rect(plateBegin.x, plateBegin.y, plateEnd.x, plateEnd.y)));
 	}
 
+	if (licensePlates.empty()) {
+		error = NO_RECOGNIZED_ELEMENTS_ERROR;
+		return false;
+	}
+
 	for (auto &p : licensePlates) {
 		normalizedPlates.push_back(Normalize(p));
 	}
 	return true;
+}
+
+void RecognitionTools::ResetError()
+{
+	error = NO_ERRORS;
 }
 
 void RecognitionTools::SetImage(Mat &img)
@@ -73,20 +84,14 @@ void RecognitionTools::ClearOutput()
 	licensePlates.clear();
 }
 
+int RecognitionTools::GetError()
+{
+	return error;
+}
+
 Mat RecognitionTools::GetImage() const
 {
 	return this->carPicture;
-}
-
-void RecognitionTools::SaveLicensePlates()
-{
-	// изменить дл€ виндоус и диалогов. ћќжно даже не тут сохран€ть а в контроллере
-	size_t id = 0;
-	for (auto &p : licensePlates) {
-		string name("license plate " + to_string(id) + ".jpg");
-		imwrite(name, p);
-		id++;
-	}
 }
 
 vector<Mat> RecognitionTools::GetLicensePlates() const
@@ -199,8 +204,8 @@ int RecognitionTools::GetHistTopBound(Mat &plate)
 int RecognitionTools::GetRightBound(Mat plate, bool iswhite)
 {
 	Mat element = getStructuringElement(MORPH_RECT,
-		cv::Size(3, 3),
-		cv::Point(1, 1));
+		Size(3, 3),
+		Point(1, 1));
 	cv::erode(plate, plate, element);
 	cv::dilate(plate, plate, element);
 
@@ -224,8 +229,8 @@ int RecognitionTools::GetRightBound(Mat plate, bool iswhite)
 int RecognitionTools::GetLeftBound(Mat plate, bool iswhite)
 {
 	Mat element = getStructuringElement(MORPH_RECT,
-		cv::Size(3, 3),
-		cv::Point(1, 1));
+		Size(3, 3),
+		Point(1, 1));
 	cv::erode(plate, plate, element);
 	cv::dilate(plate, plate, element);
 
@@ -249,7 +254,7 @@ void RecognitionTools::RotateImage(Mat &image, const double angle)
 {
 	Mat rot_mat(2, 3, CV_32FC1);
 
-	cv::Point center = cv::Point(image.cols / 2, image.rows / 2);
+	Point center = Point(image.cols / 2, image.rows / 2);
 	double scale = 1;
 
 	rot_mat = getRotationMatrix2D(center, angle, scale);

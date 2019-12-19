@@ -58,6 +58,50 @@ void WindowController::DrawComponents(HDC hdc)
 	}
 }
 
+int WindowController::GetError()
+{
+	return error;
+}
+
+const WCHAR * WindowController::GetErrorText(int errorCode)
+{	
+	error = NO_ERRORS;
+	switch (errorCode)
+	{
+	case NO_ERRORS:
+		return NO_ERRORS_TEXT;
+
+	case PLATE_CLASSIFIER_LOAD_ERROR:
+		return PLATE_CLASSIFIER_LOAD_ERROR_TEXT;
+
+	case SYMBOL_CLASSIFIER_LOAD_ERROR:
+		return SYMBOL_CLASSIFIER_LOAD_ERROR_TEXT;
+
+	case SAVE_PLATE_ERROR:
+		return SAVE_PLATE_ERROR_TEXT;
+
+	case SAVE_NPLATE_ERROR:
+		return SAVE_NPLATE_ERROR_TEXT;
+
+	case FILE_OPEN_ERROR:
+		return FILE_OPEN_ERROR_TEXT;
+
+	case NO_LOADED_IMAGE:
+		return NO_LOADED_IMAGE_TEXT;
+
+	case NO_RECOGNIZED_ELEMENTS_ERROR:
+		return NO_RECOGNIZED_ELEMENTS_ERROR_TEXT;
+
+	case NO_PLATES_ERROR:
+		return NO_PLATES_ERROR_TEXT;
+
+	case NO_NPLATES_ERROR:
+		return NO_NPLATES_ERROR_TEXT;
+	default:
+		return UNKNOWN_ERROR_TEXT;		
+	}
+}
+
 int WindowController::GetPagesNum()
 {
 	return recTools->GetLicensePlates().size();
@@ -89,15 +133,31 @@ bool WindowController::IsPagesEnd()
 
 void WindowController::SavePlate(char * filePath)
 {
-	if (!recTools->GetLicensePlates().empty()) {
-		imwrite(filePath, recTools->GetLicensePlates().at(page));
+	try {
+		if (!recTools->GetLicensePlates().empty()) {
+			imwrite(filePath, recTools->GetLicensePlates().at(page));
+		}
+		else {
+			error = NO_PLATES_ERROR;
+		}
+	}
+	catch (Exception e){
+		error = SAVE_PLATE_ERROR;
 	}
 }
 
 void WindowController::SaveNPlate(char * filePath)
 {
-	if (!recTools->GetNormalizedPlates().empty()) {
-		imwrite(filePath, recTools->GetNormalizedPlates().at(page));
+	try {
+		if (!recTools->GetNormalizedPlates().empty()) {
+			imwrite(filePath, recTools->GetNormalizedPlates().at(page));
+		}
+		else {
+			error = NO_NPLATES_ERROR;
+		}
+	}
+	catch (Exception e) {
+		error = SAVE_NPLATE_ERROR;
 	}
 }
 
@@ -114,24 +174,33 @@ void WindowController::DrawImageRect(HDC hdc, int rectL, int rectT,
 
 void WindowController::SetImage(char * filePath)
 {
-	Mat img = imread(filePath, IMREAD_COLOR);
-	page = 0;
-	recTools->ClearOutput();
-	recTools->SetImage(img);	
+	try {
+		error = NO_ERRORS;
+		Mat img = imread(filePath, IMREAD_COLOR);
+		page = 0;
+		recTools->ClearOutput();
+		recTools->SetImage(img);
+	}
+	catch (Exception e) {
+		error = FILE_OPEN_ERROR;
+	}
+
 }
 
 bool WindowController::Recognize()
 {
 	bool result = recTools->Recognize();
 	if (!result) {
+		error = NO_RECOGNIZED_ELEMENTS_ERROR;
 		page = 0;
-	}
+	}	
 	return result && (recTools->GetLicensePlates().size() > 0);
 }
 
 WindowController::WindowController()
 {
 	recTools = new RecognitionTools;
+	error = recTools->GetError();
 }
 
 WindowController::~WindowController()

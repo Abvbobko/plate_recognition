@@ -39,6 +39,8 @@ class WindowController
 {
 public:
 	void DrawComponents(HDC hdc);	
+	int GetError();
+	const WCHAR * GetErrorText(int errorCode);
 	int GetPagesNum();
 	void IncPage();
 	void DecPage();
@@ -53,8 +55,8 @@ public:
 private:
 	void DrawImageRect(HDC hdc, int rectL, int rectT,
 		int rectR, int rectB, const WCHAR * text, int textX, int textY);
-	
-	int page = 0;
+	int error;
+	int page = 0;	
 	RecognitionTools * recTools;
 };
 
