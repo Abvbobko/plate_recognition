@@ -44,6 +44,8 @@ public:
 	void DecPage();
 	bool IsPagesStart();
 	bool IsPagesEnd();
+	void SavePlate(char * filePath);
+	void SaveNPlate(char * filePath);
 	void SetImage(char * filePath);
 	bool Recognize();
 	WindowController();

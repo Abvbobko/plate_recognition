@@ -95,6 +95,6 @@ using namespace Gdiplus;
 #define NORM_IMG_RIGHT   (NORM_IMG_LEFT + STANDART_BUTTON_WIDTH)
 #define NORM_IMG_BOTTOM  (NORM_IMG_TOP + STANDART_BUTTON_HEIGHT)
 // text inside plate rect
-#define NORM_RECT_TEXT         L"No recognized plate."
+#define NORM_RECT_TEXT         L"No normalized plate."
 #define NORM_TEXT_START_POS_X  (NORM_IMG_LEFT + 35)
 #define NORM_TEXT_START_POS_Y  (NORM_IMG_BOTTOM - NORM_IMG_TOP - FONT_SIZE + 5)/2

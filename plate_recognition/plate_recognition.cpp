@@ -209,6 +209,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);
 				}
 				break;
+			case B_SAVE_ID: 
+				{
+					OPENFILENAME arg = {};
+					arg.lStructSize = sizeof(arg);
+					TCHAR file[1024];
+					file[0] = '\0';
+					arg.lpstrFile = file;
+					arg.nMaxFile = 1024;
+					arg.Flags = OFN_ALLOWMULTISELECT | OFN_EXPLORER | OFN_PATHMUSTEXIST;
+					arg.lpstrDefExt = L"jpg";
+					arg.lpstrFilter = L"Supported Files(*.jpg, *.png, *.bmp)\0*.jpg;*.png;*.bmp\0";
+					if (GetSaveFileName(&arg)) {
+						char filePath[1024];
+						size_t charsConverted = 0;
+						wcstombs_s(NULL, filePath, arg.lpstrFile, 1024);
+						winController->SavePlate(filePath);					
+					}
+					if (GetSaveFileName(&arg)) {
+						char filePath[1024];
+						size_t charsConverted = 0;
+						wcstombs_s(NULL, filePath, arg.lpstrFile, 1024);
+						winController->SaveNPlate(filePath);
+					}
+				
+				}
+				break;
 			case B_NEXT_ID:
 				winController->IncPage();
 				if (winController->IsPagesEnd()) {

@@ -87,6 +87,20 @@ bool WindowController::IsPagesEnd()
 	return page == GetPagesNum() - 1;
 }
 
+void WindowController::SavePlate(char * filePath)
+{
+	if (!recTools->GetLicensePlates().empty()) {
+		imwrite(filePath, recTools->GetLicensePlates().at(page));
+	}
+}
+
+void WindowController::SaveNPlate(char * filePath)
+{
+	if (!recTools->GetNormalizedPlates().empty()) {
+		imwrite(filePath, recTools->GetNormalizedPlates().at(page));
+	}
+}
+
 void WindowController::DrawImageRect(HDC hdc, int rectL, int rectT,
 	int rectR, int rectB, const WCHAR * text, int textX, int textY)
 {	
