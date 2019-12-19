@@ -2,28 +2,36 @@
 
 void WindowController::DrawComponents(HDC hdc)
 {
+	// draw images and rect on window
+	// main rect for image
 	DrawImageRect(hdc, MAIN_IMG_LEFT, MAIN_IMG_TOP, MAIN_IMG_RIGHT, MAIN_IMG_BOTTOM,
 		MAIN_RECT_TEXT, MAIN_TEXT_START_POS_X, MAIN_TEXT_START_POS_Y);
 
+	// rect for license plate
 	DrawImageRect(hdc, PLATE_IMG_LEFT, PLATE_IMG_TOP, PLATE_IMG_RIGHT, PLATE_IMG_BOTTOM,
 		PLATE_RECT_TEXT, PLATE_TEXT_START_POS_X, PLATE_TEXT_START_POS_Y);
 
+	// rect for normalized license plate
 	DrawImageRect(hdc, NORM_IMG_LEFT, NORM_IMG_TOP, NORM_IMG_RIGHT, NORM_IMG_BOTTOM,
 		NORM_RECT_TEXT, NORM_TEXT_START_POS_X, NORM_TEXT_START_POS_Y);
 
+	// if we have image - draw it
 	Mat img = recTools->GetImage();
 	if (img.data) {
 		Graphics gr(hdc);
+		// rect coordinates
 		PointF points[3] = {
 			PointF(MAIN_IMG_LEFT, MAIN_IMG_TOP),
 			PointF(MAIN_IMG_RIGHT, MAIN_IMG_TOP),
 			PointF(MAIN_IMG_LEFT, MAIN_IMG_BOTTOM)
 		};
+		// convert opencv Mat to GDI+ bitmap for drawing
 		cv::Size size = img.size();
 		Bitmap bitmap(size.width, size.height, img.step1(), PixelFormat24bppRGB, img.data);
 		gr.DrawImage(&bitmap, points, 3);
 	}
 	
+	// if we have license plate - draw it
 	vector<Mat> licensePlates = recTools->GetLicensePlates();
 	if (!licensePlates.empty()) {
 		Mat plate = licensePlates[page];
@@ -34,12 +42,13 @@ void WindowController::DrawComponents(HDC hdc)
 				PointF(PLATE_IMG_RIGHT, PLATE_IMG_TOP),
 				PointF(PLATE_IMG_LEFT, PLATE_IMG_BOTTOM)
 			};
+			// convert opencv Mat to GDI+ bitmap for drawing
 			cv::Size size = plate.size();
 			Bitmap bitmap(size.width, size.height, plate.step1(), PixelFormat24bppRGB, plate.data);
 			gr.DrawImage(&bitmap, points, 3);
 		}
 	}	
-
+	// if we have normalized license plate - draw it
 	vector<Mat> normalizedPlates = recTools->GetNormalizedPlates();
 	if (!normalizedPlates.empty()) {
 		Mat plate = normalizedPlates[page];		
@@ -50,21 +59,23 @@ void WindowController::DrawComponents(HDC hdc)
 				PointF(NORM_IMG_RIGHT, NORM_IMG_TOP),
 				PointF(NORM_IMG_LEFT, NORM_IMG_BOTTOM)
 			};
-			cv::Size size = plate.size();
-			
+			// convert opencv Mat to GDI+ bitmap for drawing
+			cv::Size size = plate.size();			
 			Bitmap bitmap(size.width, size.height, plate.step1(), PixelFormat24bppRGB, plate.data);
 			gr.DrawImage(&bitmap, points, 3);
 		}
 	}
 }
 
-int WindowController::GetError()
+int WindowController::GetError() const
 {
+	// return last error code
 	return error;
 }
 
 const WCHAR * WindowController::GetErrorText(int errorCode)
 {	
+	// return text of last error and reset error code
 	error = NO_ERRORS;
 	switch (errorCode)
 	{
@@ -102,13 +113,15 @@ const WCHAR * WindowController::GetErrorText(int errorCode)
 	}
 }
 
-int WindowController::GetPagesNum()
+int WindowController::GetPagesNum() const
 {
+	// get num of recognized license plates
 	return recTools->GetLicensePlates().size();
 }
 
 void WindowController::IncPage()
 {
+	// go to next page
 	if (page + 1 < GetPagesNum()) {
 		page++;
 	}
@@ -116,25 +129,30 @@ void WindowController::IncPage()
 
 void WindowController::DecPage()
 {
+	// go to prev page
 	if (page - 1 >= 0) {
 		page--;
 	}
 }
 
-bool WindowController::IsPagesStart()
+bool WindowController::IsPagesStart() const
 {
+	// is the first page?
 	return page == 0;
 }
 
-bool WindowController::IsPagesEnd()
+bool WindowController::IsPagesEnd() const
 {
+	// is the last page?
 	return page == GetPagesNum() - 1;
 }
 
 void WindowController::SavePlate(char * filePath)
 {
+	// save image of current license plate (from carrunt page)
 	try {
 		if (!recTools->GetLicensePlates().empty()) {
+			// save image
 			imwrite(filePath, recTools->GetLicensePlates().at(page));
 		}
 		else {
@@ -148,6 +166,7 @@ void WindowController::SavePlate(char * filePath)
 
 void WindowController::SaveNPlate(char * filePath)
 {
+	// save image of current normalized license plate (from carrunt page)
 	try {
 		if (!recTools->GetNormalizedPlates().empty()) {
 			imwrite(filePath, recTools->GetNormalizedPlates().at(page));
@@ -164,8 +183,9 @@ void WindowController::SaveNPlate(char * filePath)
 void WindowController::DrawImageRect(HDC hdc, int rectL, int rectT,
 	int rectR, int rectB, const WCHAR * text, int textX, int textY)
 {	
+	// draw rectangle and text for it
 	Rectangle(hdc, rectL, rectT, rectR, rectB);
-
+	// draw text inside rect
 	Graphics gr(hdc);		
 	Font font(&FontFamily(FONT_FAMILY), FONT_SIZE);
 	SolidBrush brush(FONT_COLOR);		
@@ -174,8 +194,10 @@ void WindowController::DrawImageRect(HDC hdc, int rectL, int rectT,
 
 void WindowController::SetImage(char * filePath)
 {
+	// set image from which the plates are recognized
 	try {
 		error = NO_ERRORS;
+		// IMREAD_COLOR - convert image to the 3 channel BGR color image
 		Mat img = imread(filePath, IMREAD_COLOR);
 		page = 0;
 		recTools->ClearOutput();
@@ -189,6 +211,7 @@ void WindowController::SetImage(char * filePath)
 
 bool WindowController::Recognize()
 {
+	// recognize plates from image
 	bool result = recTools->Recognize();
 	if (!result) {
 		error = NO_RECOGNIZED_ELEMENTS_ERROR;

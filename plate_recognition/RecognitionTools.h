@@ -18,18 +18,22 @@
 using namespace cv;
 using namespace std;
 
+// path of file with models weights	
 #define PLATE_CASCADE_PATH   "resources\\plate_cascade.xml"
 #define SYMBOL_CASCADE_PATH  "resources\\symbol_cascade.xml"
 
+// parameters for model
 #define SCALE_FACTOR_PLATES_CL       1.1
 #define MIN_NEIGHBORS_NUM_PLATES_CL  10
 
+// sizes of window (max and min possible size of plate)
 #define MIN_PLATE_RECT_SIZE  Size(3, 3)
 #define MAX_PLATE_RECT_SIZE  Size(500, 150)
 
 #define HALF_WIDTH   480 
 #define HALF_HEIGHT  320
 
+// angle
 #define MIN_ANGLE   -10
 #define MAX_ANGLE   10
 #define STEP_ANGLE  0.1
@@ -40,9 +44,9 @@ using namespace std;
 class RecognitionTools
 {
 public:	
-	void ClearOutput();
-	int GetError();
-	Mat GetImage() const;
+	void ClearOutput(); // clear old images
+	int GetError(); 
+	Mat GetImage() const; 
 	vector<Mat> GetLicensePlates() const;
 	vector<Mat> GetNormalizedPlates() const;
 	bool Recognize();		
@@ -53,12 +57,12 @@ public:
 private:
 	Mat Normalize(Mat &src);
 	double GetAngle(Mat &plate);
-	int GetBottomBound(Mat &plate);
-	int GetTopBound(Mat &plate);
-	int GetHistTopBound(Mat &plate);
-	int GetRightBound(Mat plate, bool iswhite);
-	int GetLeftBound(Mat plate, bool iswhite);
-	void RotateImage(Mat &image, const double angle);	
+	int GetBottomBound(Mat &plate); // get bottom of plate
+	int GetTopBound(Mat &plate);    // get top of plate
+	int GetHistTopBound(Mat &plate); 
+	int GetRightBound(Mat plate, bool iswhite); // get right of plate
+	int GetLeftBound(Mat plate, bool iswhite);  // get left of plate
+	void RotateImage(Mat &image, const double angle);
 
 	Mat carPicture;
 	int error = NO_ERRORS;

@@ -11,6 +11,7 @@ HINSTANCE hInst;                                // текущий экземпл
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
 WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
 
+// window controller for operations with window
 WindowController * winController;
 
 // Отправить объявления функций, включенных в этот модуль кода:
@@ -130,6 +131,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //
 
+// buttons
 HWND openButton, saveButton, recButton, prevButton, nextButton;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -138,6 +140,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
 	case WM_CREATE:
 		
+		// Create all buttons on window
 		openButton = CreateWindow(TEXT("button"), TEXT(B_OPEN_TEXT),
 			B_OPEN_STYLE, B_OPEN_X, B_OPEN_Y, 
 			B_OPEN_WIDTH, B_OPEN_HEIGHT,
@@ -162,8 +165,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			B_NEXT_STYLE, B_NEXT_X, B_NEXT_Y,
 			B_NEXT_WIDTH, B_NEXT_HEIGHT,
 			hWnd, (HMENU)B_NEXT_ID, NULL, NULL);
-
 		break;
+
     case WM_COMMAND:
 		{
             int wmId = LOWORD(wParam);            
@@ -171,6 +174,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
 			case B_OPEN_ID: 
 				{
+					// show open file dialog
 					OPENFILENAME arg = {};
 					arg.lStructSize = sizeof(arg);
 					TCHAR file[1024];
@@ -183,13 +187,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						char filePath[1024];
 						size_t charsConverted = 0;
 						wcstombs_s(NULL, filePath, arg.lpstrFile, 1024);
+						// open file and set image
 						winController->SetImage(filePath);								
-					}								
+					}							
+					// for showing image we must redraw window
 					RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);
 					if (winController->GetError()) {
+						// check results of file uploading
 						MessageBox(hWnd, winController->GetErrorText(winController->GetError()), L"Ok", MB_OK);
 					}
 					else {
+						// if no errors, activate buttons
 						EnableWindow(recButton, true);
 						EnableWindow(saveButton, false);
 					}
@@ -197,9 +205,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			case B_REC_ID:
 				{				
+					// license plate recognizing
 					bool result = winController->Recognize();
 					if (result) {
+						// result of recognizing
 						EnableWindow(saveButton, true);
+						// if we have many numbers (and pages)
 						if (winController->GetPagesNum() < 2) {
 							EnableWindow(prevButton, false);
 							EnableWindow(nextButton, false);
@@ -219,6 +230,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			case B_SAVE_ID: 
 				{
+					// open save file dialog
 					OPENFILENAME arg = {};
 					arg.lStructSize = sizeof(arg);
 					TCHAR file[1024];
@@ -229,6 +241,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					arg.lpstrDefExt = L"jpg";
 					arg.lpstrFilter = L"Supported Files(*.jpg, *.png, *.bmp)\0*.jpg;*.png;*.bmp\0";
 					if (GetSaveFileName(&arg)) {
+						// save main license plate
 						char filePath[1024];
 						size_t charsConverted = 0;
 						wcstombs_s(NULL, filePath, arg.lpstrFile, 1024);
@@ -238,6 +251,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						MessageBox(hWnd, winController->GetErrorText(winController->GetError()), L"Ok", MB_OK);
 					}
 					if (GetSaveFileName(&arg)) {
+						// save normalized license plate
 						char filePath[1024];
 						size_t charsConverted = 0;
 						wcstombs_s(NULL, filePath, arg.lpstrFile, 1024);
@@ -250,6 +264,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 				break;
 			case B_NEXT_ID:
+				// open next license plate from photo (next page)
 				winController->IncPage();
 				if (winController->IsPagesEnd()) {
 					EnableWindow(nextButton, false);
@@ -258,6 +273,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);
 				break;
 			case B_PREV_ID:
+				// open prev license plate from photo (prev page)
 				winController->DecPage();				
 				if (winController->IsPagesStart()) {
 					EnableWindow(prevButton, false);
@@ -280,19 +296,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	
     case WM_PAINT:
         {
+			// write rectangles on window (or photos) 
 			PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);			
 			winController->DrawComponents(hdc);			
             EndPaint(hWnd, &ps);
         }
         break;
-    case WM_DESTROY:
 
+    case WM_DESTROY:
         PostQuitMessage(0);
         break;
 
 	case WM_GETMINMAXINFO: {										
-		
+		// set size of window
 		RECT w, c;
 		
 		GetWindowRect(hWnd, &w);

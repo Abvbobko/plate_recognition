@@ -38,25 +38,26 @@ using namespace cv;
 class WindowController
 {
 public:
-	void DrawComponents(HDC hdc);	
-	int GetError();
-	const WCHAR * GetErrorText(int errorCode);
-	int GetPagesNum();
-	void IncPage();
-	void DecPage();
-	bool IsPagesStart();
-	bool IsPagesEnd();
-	void SavePlate(char * filePath);
+	void DrawComponents(HDC hdc);    // draw images on window
+	int GetError() const;            // get error info
+	const WCHAR * GetErrorText(int errorCode); 
+	int GetPagesNum() const; 
+	void IncPage();                  // to next page
+	void DecPage();                  // to prev page
+	bool IsPagesStart() const;       // is the first page?
+	bool IsPagesEnd() const;         // is the last page?
+	void SavePlate(char * filePath); // save plate to file
 	void SaveNPlate(char * filePath);
-	void SetImage(char * filePath);
-	bool Recognize();
+	void SetImage(char * filePath); 
+	bool Recognize();                // recognize license plates
 	WindowController();
 	~WindowController();
 private:
+	// draw one rect + text inside
 	void DrawImageRect(HDC hdc, int rectL, int rectT,
-		int rectR, int rectB, const WCHAR * text, int textX, int textY);
+		int rectR, int rectB, const WCHAR * text, int textX, int textY); 
 	int error;
 	int page = 0;	
-	RecognitionTools * recTools;
+	RecognitionTools * recTools; // tools for recognition
 };
 

@@ -114,6 +114,7 @@
 #define NO_NPLATES_ERROR                   420
 #define NO_NPLATES_ERROR_TEXT              L"Error. No normalized plates."
 
+// ok or inknown errors
 #define UNKNOWN_ERROR_TEXT L"Unknown error."
 #define NO_ERRORS          0
 #define NO_ERRORS_TEXT     L"OK"
