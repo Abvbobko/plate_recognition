@@ -39,14 +39,20 @@ class WindowController
 {
 public:
 	void DrawComponents(HDC hdc);	
+	int GetPagesNum();
+	void IncPage();
+	void DecPage();
+	bool IsPagesStart();
+	bool IsPagesEnd();
 	void SetImage(char * filePath);
-	void Recognize();
+	bool Recognize();
 	WindowController();
 	~WindowController();
 private:
 	void DrawImageRect(HDC hdc, int rectL, int rectT,
 		int rectR, int rectB, const WCHAR * text, int textX, int textY);
-
+	
+	int page = 0;
 	RecognitionTools * recTools;
 };
 

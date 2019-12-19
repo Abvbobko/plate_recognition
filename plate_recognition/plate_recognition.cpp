@@ -130,28 +130,35 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //
 
+HWND openButton, saveButton, recButton, prevButton, nextButton;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
 	case WM_CREATE:
 		
-		CreateWindow(TEXT("button"), TEXT(B_OPEN_TEXT),
+		openButton = CreateWindow(TEXT("button"), TEXT(B_OPEN_TEXT),
 			B_OPEN_STYLE, B_OPEN_X, B_OPEN_Y, 
 			B_OPEN_WIDTH, B_OPEN_HEIGHT,
 			hWnd, (HMENU)B_OPEN_ID, NULL, NULL);
 
-		CreateWindow(TEXT("button"), TEXT(B_REC_TEXT),
+		saveButton = CreateWindow(TEXT("button"), TEXT(B_SAVE_TEXT),
+			B_SAVE_STYLE, B_SAVE_X, B_SAVE_Y,
+			B_SAVE_WIDTH, B_SAVE_HEIGHT,
+			hWnd, (HMENU)B_SAVE_ID, NULL, NULL);
+
+		recButton = CreateWindow(TEXT("button"), TEXT(B_REC_TEXT),
 			B_REC_STYLE, B_REC_X, B_REC_Y,
 			B_REC_WIDTH, B_REC_HEIGHT,
 			hWnd, (HMENU)B_REC_ID, NULL, NULL);
 
-		CreateWindow(TEXT("button"), TEXT(B_PREV_TEXT),
+		prevButton = CreateWindow(TEXT("button"), TEXT(B_PREV_TEXT),
 			B_PREV_STYLE, B_PREV_X, B_PREV_Y,
 			B_PREV_WIDTH, B_PREV_HEIGHT,
 			hWnd, (HMENU)B_PREV_ID, NULL, NULL);
 
-		CreateWindow(TEXT("button"), TEXT(B_NEXT_TEXT),
+		nextButton = CreateWindow(TEXT("button"), TEXT(B_NEXT_TEXT),
 			B_NEXT_STYLE, B_NEXT_X, B_NEXT_Y,
 			B_NEXT_WIDTH, B_NEXT_HEIGHT,
 			hWnd, (HMENU)B_NEXT_ID, NULL, NULL);
@@ -176,15 +183,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						char filePath[1024];
 						size_t charsConverted = 0;
 						wcstombs_s(NULL, filePath, arg.lpstrFile, 1024);
-						winController->SetImage(filePath);						
+						winController->SetImage(filePath);		
+						EnableWindow(recButton, true);
 					}				
+					EnableWindow(saveButton, false);
 					RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);	
 				}
 				break;
 			case B_REC_ID:
-				winController->Recognize();
+				{
+					bool result = winController->Recognize();
+					if (result) {
+						EnableWindow(saveButton, true);
+						if (winController->GetPagesNum() < 2) {
+							EnableWindow(prevButton, false);
+							EnableWindow(nextButton, false);
+						}
+						else {
+							EnableWindow(nextButton, true);
+						}
+					}
+					else {
+						EnableWindow(saveButton, false);
+					}
+					RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);
+				}
+				break;
+			case B_NEXT_ID:
+				winController->IncPage();
+				if (winController->IsPagesEnd()) {
+					EnableWindow(nextButton, false);
+					EnableWindow(prevButton, true);
+				}
 				RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);
 				break;
+			case B_PREV_ID:
+				winController->DecPage();				
+				if (winController->IsPagesStart()) {
+					EnableWindow(prevButton, false);
+					EnableWindow(nextButton, true);
+				}
+				
+				RedrawWindow(hWnd, 0, 0, RDW_INVALIDATE);
+				break;			
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;

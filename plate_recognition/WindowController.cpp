@@ -2,6 +2,15 @@
 
 void WindowController::DrawComponents(HDC hdc)
 {
+	DrawImageRect(hdc, MAIN_IMG_LEFT, MAIN_IMG_TOP, MAIN_IMG_RIGHT, MAIN_IMG_BOTTOM,
+		MAIN_RECT_TEXT, MAIN_TEXT_START_POS_X, MAIN_TEXT_START_POS_Y);
+
+	DrawImageRect(hdc, PLATE_IMG_LEFT, PLATE_IMG_TOP, PLATE_IMG_RIGHT, PLATE_IMG_BOTTOM,
+		PLATE_RECT_TEXT, PLATE_TEXT_START_POS_X, PLATE_TEXT_START_POS_Y);
+
+	DrawImageRect(hdc, NORM_IMG_LEFT, NORM_IMG_TOP, NORM_IMG_RIGHT, NORM_IMG_BOTTOM,
+		NORM_RECT_TEXT, NORM_TEXT_START_POS_X, NORM_TEXT_START_POS_Y);
+
 	Mat img = recTools->GetImage();
 	if (img.data) {
 		Graphics gr(hdc);
@@ -14,13 +23,10 @@ void WindowController::DrawComponents(HDC hdc)
 		Bitmap bitmap(size.width, size.height, img.step1(), PixelFormat24bppRGB, img.data);
 		gr.DrawImage(&bitmap, points, 3);
 	}
-	else {
-		DrawImageRect(hdc, MAIN_IMG_LEFT, MAIN_IMG_TOP, MAIN_IMG_RIGHT, MAIN_IMG_BOTTOM,
-			MAIN_RECT_TEXT, MAIN_TEXT_START_POS_X, MAIN_TEXT_START_POS_Y);
-	}
+	
 	vector<Mat> licensePlates = recTools->GetLicensePlates();
 	if (!licensePlates.empty()) {
-		Mat plate = licensePlates[0];/////////////////
+		Mat plate = licensePlates[page];
 		if (plate.data) {
 			Graphics gr(hdc);
 			PointF points[3] = {
@@ -32,16 +38,11 @@ void WindowController::DrawComponents(HDC hdc)
 			Bitmap bitmap(size.width, size.height, plate.step1(), PixelFormat24bppRGB, plate.data);
 			gr.DrawImage(&bitmap, points, 3);
 		}
-	}
-	else {
-		DrawImageRect(hdc, PLATE_IMG_LEFT, PLATE_IMG_TOP, PLATE_IMG_RIGHT, PLATE_IMG_BOTTOM,
-			PLATE_RECT_TEXT, PLATE_TEXT_START_POS_X, PLATE_TEXT_START_POS_Y);
-	}
+	}	
 
 	vector<Mat> normalizedPlates = recTools->GetNormalizedPlates();
 	if (!normalizedPlates.empty()) {
-		Mat plate = normalizedPlates[0];///////////
-		
+		Mat plate = normalizedPlates[page];		
 		if (plate.data) {
 			Graphics gr(hdc);
 			PointF points[3] = {
@@ -55,10 +56,35 @@ void WindowController::DrawComponents(HDC hdc)
 			gr.DrawImage(&bitmap, points, 3);
 		}
 	}
-	else {
-		DrawImageRect(hdc, NORM_IMG_LEFT, NORM_IMG_TOP, NORM_IMG_RIGHT, NORM_IMG_BOTTOM,
-			NORM_RECT_TEXT, NORM_TEXT_START_POS_X, NORM_TEXT_START_POS_Y);
+}
+
+int WindowController::GetPagesNum()
+{
+	return recTools->GetLicensePlates().size();
+}
+
+void WindowController::IncPage()
+{
+	if (page + 1 < GetPagesNum()) {
+		page++;
 	}
+}
+
+void WindowController::DecPage()
+{
+	if (page - 1 >= 0) {
+		page--;
+	}
+}
+
+bool WindowController::IsPagesStart()
+{
+	return page == 0;
+}
+
+bool WindowController::IsPagesEnd()
+{
+	return page == GetPagesNum() - 1;
 }
 
 void WindowController::DrawImageRect(HDC hdc, int rectL, int rectT,
@@ -75,12 +101,18 @@ void WindowController::DrawImageRect(HDC hdc, int rectL, int rectT,
 void WindowController::SetImage(char * filePath)
 {
 	Mat img = imread(filePath, IMREAD_COLOR);
+	page = 0;
+	recTools->ClearOutput();
 	recTools->SetImage(img);	
 }
 
-void WindowController::Recognize()
+bool WindowController::Recognize()
 {
-	recTools->Recognize();
+	bool result = recTools->Recognize();
+	if (!result) {
+		page = 0;
+	}
+	return result && (recTools->GetLicensePlates().size() > 0);
 }
 
 WindowController::WindowController()

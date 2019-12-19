@@ -26,8 +26,7 @@ bool RecognitionTools::Recognize()
 		return false;
 	}
 
-	normalizedPlates.clear();
-	licensePlates.clear();	
+	ClearOutput();
 
 	Mat grayPicture;
 	cvtColor(carPicture, grayPicture, COLOR_BGR2GRAY);
@@ -66,6 +65,12 @@ bool RecognitionTools::Recognize()
 void RecognitionTools::SetImage(Mat &img)
 {
 	this->carPicture = img;
+}
+
+void RecognitionTools::ClearOutput()
+{
+	normalizedPlates.clear();
+	licensePlates.clear();
 }
 
 Mat RecognitionTools::GetImage() const

@@ -39,13 +39,13 @@ using namespace std;
 class RecognitionTools
 {
 public:	
+	void ClearOutput();
 	Mat GetImage() const;
 	vector<Mat> GetLicensePlates() const;
 	vector<Mat> GetNormalizedPlates() const;
 	bool Recognize();	
 	void SaveLicensePlates();	////////////	
 	void SetImage(Mat &img);
-
 	RecognitionTools();
 	~RecognitionTools();
 private:
