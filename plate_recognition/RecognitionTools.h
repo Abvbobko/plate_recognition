@@ -45,7 +45,7 @@ class RecognitionTools
 {
 public:	
 	void ClearOutput(); // clear old images
-	int GetError(); 
+	int GetError() const; 
 	Mat GetImage() const; 
 	vector<Mat> GetLicensePlates() const;
 	vector<Mat> GetNormalizedPlates() const;

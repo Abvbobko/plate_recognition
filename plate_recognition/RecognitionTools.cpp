@@ -99,7 +99,7 @@ void RecognitionTools::ClearOutput()
 	licensePlates.clear();
 }
 
-int RecognitionTools::GetError()
+int RecognitionTools::GetError() const
 {
 	// get error code
 	return error;
@@ -163,7 +163,7 @@ double RecognitionTools::GetAngle(Mat &plate)
 	double resultAngle = 0;
 	Mat tmp;
 
-	// rotate image on different angles, return image with the best bottom bound
+	// rotate image on different angles, return angle with the best bottom bound
 	for (double angle = MIN_ANGLE; angle < MAX_ANGLE; angle += STEP_ANGLE) {
 		tmp = plate.clone();
 		RotateImage(tmp, angle);
@@ -241,7 +241,8 @@ int RecognitionTools::GetRightBound(Mat plate, bool iswhite)
 	// MORPH_RECT - a rectangular structuring element
 	Mat element = getStructuringElement(MORPH_RECT,
 		Size(3, 3),
-		Point(1, 1));
+		Point(1, 1)
+	);
 	// erode - erodes an image by using a specific structuring element.
 	// dilate - dilates an image by using a specific structuring element.
 	cv::erode(plate, plate, element);
